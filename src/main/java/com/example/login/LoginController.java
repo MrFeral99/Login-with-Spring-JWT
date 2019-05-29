@@ -1,12 +1,21 @@
 package com.example.login;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 
 @Controller    // This means that this class is a Controller
@@ -48,10 +57,16 @@ public class LoginController {
     @PostMapping(path="/token", consumes = "application/json", produces = "application/json")
     public @ResponseBody String createToken(){
         String token="";
+        long seconds=10000;//millisecs 10 seconds
+
+        Calendar date = Calendar.getInstance();
+        long t= date.getTimeInMillis();
+        Date afterAddingOneMin=new Date(t + (seconds));
         try {
-            Algorithm algorithm = Algorithm.HMAC256("secret");
+            Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
             token = JWT.create()
                     .withIssuer("auth0")
+                    .withExpiresAt(afterAddingOneMin)
                     .sign(algorithm);
 
         } catch (JWTCreationException exception){
@@ -59,5 +74,25 @@ public class LoginController {
 
         }
         return token;
+
+    }
+
+    @PostMapping(path="/validate", consumes = "application/json", produces = "application/json")
+    public @ResponseBody String validateToken(@RequestBody String token) throws JSONException{
+        JSONObject d= new JSONObject(token);
+        String pp= d.getString("jwt");
+        try {
+            Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer("auth0")
+                    .acceptExpiresAt(25)
+                    .build(); //Reusable verifier instance
+            DecodedJWT jwt = verifier.verify(pp);
+            return "token valido";
+        } catch (JWTVerificationException exception){
+            //Invalid signature/claims
+            return"non valido";
+        }
+
     }
 }
