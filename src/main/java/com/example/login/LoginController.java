@@ -84,7 +84,7 @@ public class LoginController {
             Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("auth0")
-                    .acceptExpiresAt(3600)
+                    //.acceptExpiresAt(30)
                     .build(); //Reusable verifier instance
             DecodedJWT jwt = verifier.verify(pp);
             status.setStatus("valid");
