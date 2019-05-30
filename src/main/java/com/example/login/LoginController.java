@@ -85,7 +85,7 @@ public class LoginController {
             Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer("auth0")
-                    .acceptExpiresAt(25)
+                    .acceptExpiresAt(3600)
                     .build(); //Reusable verifier instance
             DecodedJWT jwt = verifier.verify(pp);
             status.setStatus("valid");
@@ -102,7 +102,7 @@ public class LoginController {
     @PostMapping(path="/accedi", consumes = "application/json", produces="application/json")
     public @ResponseBody ResponseToken accedi(@RequestBody Users u){
 
-        long seconds=10000;//millisecs 10 seconds
+        long seconds=3600000;//millisecs 1 hour  divide by 1000 and you'll get the time in seconds
 
         Calendar date = Calendar.getInstance();
         long t= date.getTimeInMillis();
