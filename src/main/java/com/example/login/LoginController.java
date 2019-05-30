@@ -41,7 +41,6 @@ public class LoginController {
     @PostMapping(path="/add",consumes = "application/json", produces = "application/json")
     public @ResponseBody ResponseRest addNewUser (@RequestBody Users u) {
         // @ResponseBody means the returned String is the response, not a view name
-        // @RequestParam means it is a parameter from the GET or POST request
         ResponseRest rest= new ResponseRest("success");
         Users n = new Users();
         n.setName(u.getName());
