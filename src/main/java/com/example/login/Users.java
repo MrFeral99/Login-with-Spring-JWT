@@ -16,8 +16,6 @@ public class Users {
 
     private String email;
 
-    private String token;
-
     public Integer getId() {
         return id;
     }
@@ -58,11 +56,4 @@ public class Users {
         return password;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }
