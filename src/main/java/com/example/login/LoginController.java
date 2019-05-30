@@ -37,7 +37,7 @@ public class LoginController {
         }
 
     }*/
-
+    @CrossOrigin
     @PostMapping(path="/add",consumes = "application/json", produces = "application/json")
     public @ResponseBody ResponseRest addNewUser (@RequestBody Users u) {
         // @ResponseBody means the returned String is the response, not a view name
@@ -75,10 +75,12 @@ public class LoginController {
 
     }*/
 
+    @CrossOrigin
     @PostMapping(path="/validate", consumes = "application/json", produces = "application/json")
-    public @ResponseBody String validateToken(@RequestBody String token) throws JSONException{
+    public @ResponseBody ResponseValidation validateToken(@RequestBody String token) throws JSONException{
         JSONObject d= new JSONObject(token);
-        String pp= d.getString("jwt");
+        String pp= d.getString("token");
+        ResponseValidation status= new ResponseValidation();
         try {
             Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
             JWTVerifier verifier = JWT.require(algorithm)
@@ -86,14 +88,17 @@ public class LoginController {
                     .acceptExpiresAt(25)
                     .build(); //Reusable verifier instance
             DecodedJWT jwt = verifier.verify(pp);
-            return "token valido";
+            status.setStatus("valid");
         } catch (JWTVerificationException exception){
             //Invalid signature/claims
-            return"non valido";
+            status.setStatus("invalid");
         }
+
+        return status;
 
     }
 
+    @CrossOrigin
     @PostMapping(path="/accedi", consumes = "application/json", produces="application/json")
     public @ResponseBody ResponseToken accedi(@RequestBody Users u){
 
