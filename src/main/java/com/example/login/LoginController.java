@@ -6,8 +6,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,10 +25,10 @@ public class LoginController {
     private Iterable<Users> users;
 
 
-    @PostMapping(path="/accedi", consumes = "application/json", produces="application/json")
+  /*  @PostMapping(path="/accedi", consumes = "application/json", produces="application/json")
     public @ResponseBody Iterable<Users> login(@RequestBody Users u){
 
-        users=userRepository.findByFilter(u.getEmail(), u.getPassword());
+        users=userRepository.findByEmailAndPassword(u.getEmail(), u.getPassword());
         Iterator<Users> iterator=users.iterator();
         if(iterator.hasNext()){
             return users;
@@ -38,7 +36,7 @@ public class LoginController {
             return null;
         }
 
-    }
+    }*/
 
     @PostMapping(path="/add",consumes = "application/json", produces = "application/json")
     public @ResponseBody ResponseRest addNewUser (@RequestBody Users u) {
@@ -54,7 +52,7 @@ public class LoginController {
         return rest;
     }
 
-    @PostMapping(path="/token", consumes = "application/json", produces = "application/json")
+   /* @PostMapping(path="/token", consumes = "application/json", produces = "application/json")
     public @ResponseBody String createToken(){
         String token="";
         long seconds=10000;//millisecs 10 seconds
@@ -75,7 +73,7 @@ public class LoginController {
         }
         return token;
 
-    }
+    }*/
 
     @PostMapping(path="/validate", consumes = "application/json", produces = "application/json")
     public @ResponseBody String validateToken(@RequestBody String token) throws JSONException{
@@ -94,5 +92,35 @@ public class LoginController {
             return"non valido";
         }
 
+    }
+
+    @PostMapping(path="/accedi", consumes = "application/json", produces="application/json")
+    public @ResponseBody ResponseToken accedi(@RequestBody Users u){
+
+        long seconds=10000;//millisecs 10 seconds
+
+        Calendar date = Calendar.getInstance();
+        long t= date.getTimeInMillis();
+        Date exp=new Date(t + (seconds));
+
+        users=userRepository.findByEmailAndPassword(u.getEmail(), u.getPassword());
+        Iterator<Users> iterator=users.iterator();
+        ResponseToken token= new ResponseToken();
+        if(iterator.hasNext()){
+            try {
+                Algorithm algorithm = Algorithm.HMAC256("qwertyuioplkjhgfdsazxcvbnm1234567890");
+                token.setToken(JWT.create()
+                        .withIssuer("auth0")
+                        .withExpiresAt(exp)
+                        .sign(algorithm));
+
+            } catch (JWTCreationException exception){
+                //Invalid Signing configuration / Couldn't convert Claims.
+
+            }
+        }else {
+            token.setFailed("Utente non registrato");
+        }
+    return token;
     }
 }
