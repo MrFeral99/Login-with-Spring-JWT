@@ -20,6 +20,7 @@ dependencies {
 	implementation 'mysql:mysql-connector-java'
 	implementation 'com.auth0:java-jwt:3.8.1'
 	implementation 'org.json:json:20090211'
-	
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-crypto:3.1.0.RELEASE'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
